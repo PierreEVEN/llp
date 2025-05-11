@@ -1,2 +1,31 @@
-project(Llp)
+cmake_minimum_required(VERSION 3.13)
 
+project(LightLanguageProcessor)
+
+option(LLP_SHARED "Build using shared libraries" ON)
+
+#Global cmake features
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+
+
+file(GLOB_RECURSE SOURCES src/**)
+
+if ($(LLP_SHARED))
+    add_library(llp SHARED ${SOURCES})
+else()
+    add_library(llp STATIC ${SOURCES})
+endif()
+
+target_compile_features(llp PUBLIC cxx_std_20)
+set_target_properties(llp PROPERTIES CXX_EXTENSIONS OFF)
+source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES  ${SOURCES})
+target_include_directories(llp PRIVATE src)
+target_include_directories(llp PUBLIC include)
+
+
+file(GLOB_RECURSE SOURCES tests/**.cpp)
+add_executable(llp_tests ${SOURCES})
+target_compile_features(llp_tests PUBLIC cxx_std_20)
+set_target_properties(llp_tests PROPERTIES CXX_EXTENSIONS OFF)
+target_include_directories(llp_tests PRIVATE tests)
+target_link_libraries(llp_tests PRIVATE llp)
