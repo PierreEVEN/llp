@@ -29,3 +29,5 @@ target_compile_features(llp_tests PUBLIC cxx_std_20)
 set_target_properties(llp_tests PROPERTIES CXX_EXTENSIONS OFF)
 target_include_directories(llp_tests PRIVATE tests)
 target_link_libraries(llp_tests PRIVATE llp)
+
+install(TARGETS llp)
