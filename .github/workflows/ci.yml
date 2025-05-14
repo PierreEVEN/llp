@@ -32,7 +32,7 @@ jobs:
           retention-days: 1
           path: |
             ./include
-            ./build/Release/llp.lib
+            ./build/libllp.a
 
   build_windows:
     name: Windows - Rust app
@@ -46,7 +46,7 @@ jobs:
         with:
           generator: Ninja
           options: CMAKE_BUILD_TYPE=Release
-          cxx-compiler: clang++
+          cxx-compiler: MSVC
 
       - run: dir build
 
