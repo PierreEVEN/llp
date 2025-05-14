@@ -21,7 +21,7 @@ jobs:
         with:
           options: CMAKE_BUILD_TYPE=Release
 
-      - run: ls -la
+      - run: ls -la build
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
@@ -42,9 +42,10 @@ jobs:
       - name: Build Project
         uses: threeal/cmake-action@v2.1.0
         with:
+          generator: Ninja
           options: CMAKE_BUILD_TYPE=Release
 
-      - run: dirgit p
+      - run: dir build
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4

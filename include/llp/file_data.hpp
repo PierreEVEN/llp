@@ -1,10 +1,6 @@
 #pragma once
 #include <string>
-
-namespace std::filesystem
-{
-	class path;
-}
+#include <filesystem>
 
 namespace Llp {
 
