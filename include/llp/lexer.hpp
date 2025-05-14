@@ -1,4 +1,5 @@
 #pragma once
+#include <format>
 #include "tokens.hpp"
 
 #include <string>
@@ -6,75 +7,94 @@
 
 namespace Llp
 {
-struct LexerContext
-{
-    const char* get_token_name(LexerTokenTypeId id) const
-    {
-        if (id == NULL_TOKEN)
-            return "Null";
-        if (auto it = token_names.find(id); it != token_names.end())
-            return it->second;
-        return "Undefined_Token_Id";
-    }
+	class TokenSet
+	{
+	public:
+		const char* get_token_name(LexerTokenTypeId id) const
+		{
+			if (id == NULL_TOKEN)
+				return "Null";
+			if (auto it = token_names.find(id); it != token_names.end())
+				return it->second;
+			return "Undefined_Token_Id";
+		}
 
-    std::vector<std::unique_ptr<ITokenBuilder>>       token_types;
-    std::unordered_map<LexerTokenTypeId, const char*> token_names;
-};
 
-class Lexer
-{
-public:
-    friend class TokenizedBlock;
-    Lexer();
-    void run(const std::string& source);
+		template <typename T>
+		void register_token(const char* name)
+		{
+			token_types.emplace_back(std::make_unique<TTokenBuilder<T>>());
+			token_names.emplace(TTokenType<T>::id, name);
+		}
 
-    const TokenizedBlock& get_root() const
-    {
-        return block;
-    }
+		template <typename T, typename Other>
+		void register_token_before(const char* name)
+		{
+			for (auto it = token_types.begin(); it != token_types.end(); ++it)
+				if ((*it)->id() == TTokenType<Other>::id)
+				{
+					token_types.insert(it, std::make_unique<TTokenBuilder<T>>());
+					token_names.emplace(TTokenType<T>::id, name);
+					break;
+				}
+		}
 
-    const std::optional<ParserError>& get_error() const
-    {
-        return error;
-    }
+		template <typename T>
+		void remove_token()
+		{
+			for (auto it = token_types.begin(); it != token_types.end(); ++it)
+				if ((*it)->id() == TTokenType<T>::id)
+				{
+					token_names.erase(TTokenType<T>::id);
+					token_types.erase(it);
+					break;
+				}
+		}
 
-    template <typename T> void register_token(const char* name)
-    {
-        context->token_types.emplace_back(std::make_unique<TTokenBuilder<T>>());
-        context->token_names.emplace(TTokenType<T>::id, name);
-    }
+		std::unique_ptr<ILexerToken> parse(const std::string& source, Location& location, ParserError& error) const
+		{
+			if (error)
+				return nullptr;
+			for (const auto& type : token_types)
+			{
+				if (auto token = type->consume(*this, location, source, error))
+				{
+					if (error)
+						return nullptr;
+					return token;
+				}
+			}
+			if (!error)
+				error = {
+					location,
+					std::format("Parsing failed {}:{} : unidentified token '{}'", location.line, location.column,
+					            source[location.index])
+				};
+			return nullptr;
+		}
 
-    template <typename T, typename Other> void register_token_before(const char* name)
-    {
-        for (auto it = context->token_types.begin(); it != context->token_types.end(); ++it)
-            if ((*it)->id() == TTokenType<Other>::id)
-            {
-                context->token_types.insert(it, std::make_unique<TTokenBuilder<T>>());
-                context->token_names.emplace(TTokenType<T>::id, name);
-                break;
-            }
-    }
+		static TokenSet preset_c_like();
+		static TokenSet preset_json_like();
 
-    template <typename T> void remove_token()
-    {
-        for (auto it = context->token_types.begin(); it != context->token_types.end(); ++it)
-            if ((*it)->id() == TTokenType<T>::id)
-            {
-                context->token_names.erase(TTokenType<T>::id);
-                context->token_types.erase(it);
-                break;
-            }
-    }
+	private:
+		std::vector<std::unique_ptr<ITokenBuilder>> token_types;
+		std::unordered_map<LexerTokenTypeId, const char*> token_names;
+	};
 
-    const LexerContext& get_context() const
-    {
-        return *context;
-    }
+	//@TODO : Remove Lexer and rename DataBlock to lexer (simplify)
+	class Lexer
+	{
+	public:
+		friend class DataBlock;
 
-private:
-    std::shared_ptr<LexerContext> context;
+		[[nodiscard]] ParserError run(const std::string& source, const TokenSet& token_set);
 
-    std::optional<ParserError> error;
-    TokenizedBlock             block;
-};
+		const DataBlock& get_root() const
+		{
+			return root_block;
+		}
+
+	private:
+		DataBlock root_block;
+	};
 } // namespace Llp

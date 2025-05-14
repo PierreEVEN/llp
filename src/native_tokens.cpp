@@ -2,7 +2,7 @@
 
 namespace Llp
 {
-std::unique_ptr<Llp::CommentToken> CommentToken::consume(Lexer&, Location& in_location, const std::string& source, std::optional<ParserError>& error)
+std::unique_ptr<Llp::CommentToken> CommentToken::consume(const TokenSet&, Location& in_location, const std::string& source, ParserError& error)
 {
     if (in_location.index + 1 < source.size())
     {
@@ -48,27 +48,27 @@ std::unique_ptr<Llp::CommentToken> CommentToken::consume(Lexer&, Location& in_lo
     return nullptr;
 }
 
-std::unique_ptr<SemicolonToken> SemicolonToken::consume(Lexer&, Location& in_location, const std::string& source, std::optional<ParserError>&)
+std::unique_ptr<SemicolonToken> SemicolonToken::consume(const TokenSet&, Location& in_location, const std::string& source, ParserError&)
 {
     return source[in_location.index] == ';' ? std::make_unique<SemicolonToken>(in_location++) : nullptr;
 }
 
-std::unique_ptr<EqualsToken> EqualsToken::consume(Lexer&, Location& in_location, const std::string& source, std::optional<ParserError>&)
+std::unique_ptr<EqualsToken> EqualsToken::consume(const TokenSet&, Location& in_location, const std::string& source, ParserError&)
 {
     return source[in_location.index] == '=' ? std::make_unique<EqualsToken>(in_location++) : nullptr;
 }
 
-std::unique_ptr<ComaToken> ComaToken::consume(Lexer&, Location& in_location, const std::string& source, std::optional<ParserError>&)
+std::unique_ptr<ComaToken> ComaToken::consume(const TokenSet&, Location& in_location, const std::string& source, ParserError&)
 {
     return source[in_location.index] == ',' ? std::make_unique<ComaToken>(in_location++) : nullptr;
 }
 
-std::unique_ptr<EndlToken> EndlToken::consume(Lexer&, Location& in_location, const std::string& source, std::optional<ParserError>&)
+std::unique_ptr<EndlToken> EndlToken::consume(const TokenSet&, Location& in_location, const std::string& source, ParserError&)
 {
     return source[in_location.index] == '\n' ? std::make_unique<EndlToken>(in_location.on_new_line()) : nullptr;
 }
 
-std::unique_ptr<IncludeToken> IncludeToken::consume(Lexer&, Location& in_location, const std::string& source, std::optional<ParserError>& error)
+std::unique_ptr<IncludeToken> IncludeToken::consume(const TokenSet&, Location& in_location, const std::string& source, ParserError& error)
 {
     if (consume_string(in_location, source, "#include"))
     {
@@ -99,7 +99,7 @@ std::unique_ptr<IncludeToken> IncludeToken::consume(Lexer&, Location& in_locatio
     return nullptr;
 }
 
-std::unique_ptr<WhitespaceToken> WhitespaceToken::consume(Lexer&, Location& in_location, const std::string& source, std::optional<ParserError>&)
+std::unique_ptr<WhitespaceToken> WhitespaceToken::consume(const TokenSet&, Location& in_location, const std::string& source, ParserError&)
 {
     if (std::isspace(static_cast<unsigned char>(source[in_location.index])))
     {
@@ -112,7 +112,7 @@ std::unique_ptr<WhitespaceToken> WhitespaceToken::consume(Lexer&, Location& in_l
     return nullptr;
 }
 
-std::unique_ptr<WordToken> WordToken::consume(Lexer&, Location& in_location, const std::string& source, std::optional<ParserError>&)
+std::unique_ptr<WordToken> WordToken::consume(const TokenSet&, Location& in_location, const std::string& source, ParserError&)
 {
     unsigned char start_chr = source[in_location.index];
     if (std::isalpha(start_chr) || start_chr == '_')
@@ -132,11 +132,11 @@ std::unique_ptr<WordToken> WordToken::consume(Lexer&, Location& in_location, con
     return nullptr;
 }
 
-std::unique_ptr<BlockToken> BlockToken::consume(Lexer& lexer, Location& in_location, const std::string& source, std::optional<ParserError>& error)
+std::unique_ptr<BraceBlockToken> BraceBlockToken::consume(const TokenSet& token_set, Location& in_location, const std::string& source, ParserError& error)
 {
     if (source[in_location.index] == '{')
     {
-        auto block = std::make_unique<BlockToken>(++in_location);
+        auto block = std::make_unique<BraceBlockToken>(++in_location);
         while (in_location.index < source.size())
         {
             if (source[in_location.index] == '}')
@@ -144,7 +144,7 @@ std::unique_ptr<BlockToken> BlockToken::consume(Lexer& lexer, Location& in_locat
                 block->end = in_location++;
                 return block;
             }
-            block->content.consume_next(lexer, source, in_location, error);
+            block->content.consume_next(token_set, source, in_location, error);
             if (error)
                 return nullptr;
         }
@@ -153,7 +153,50 @@ std::unique_ptr<BlockToken> BlockToken::consume(Lexer& lexer, Location& in_locat
     return nullptr;
 }
 
-std::unique_ptr<StringLiteralToken> StringLiteralToken::consume(Lexer&, Location& in_location, const std::string& source, std::optional<ParserError>& error)
+std::unique_ptr<SquareBlockToken> SquareBlockToken::consume(const TokenSet& token_set, Location& in_location,
+	const std::string& source, ParserError& error)
+{
+    if (source[in_location.index] == '[')
+    {
+        auto block = std::make_unique<SquareBlockToken>(++in_location);
+        while (in_location.index < source.size())
+        {
+            if (source[in_location.index] == ']')
+            {
+                block->end = in_location++;
+                return block;
+            }
+            block->content.consume_next(token_set, source, in_location, error);
+            if (error)
+                return nullptr;
+        }
+        error = { in_location, "Missing arguments end. ')' expected" };
+    }
+    return nullptr;
+}
+
+std::unique_ptr<ParenthesisBlockToken> ParenthesisBlockToken::consume(const TokenSet& token_set, Location& in_location, const std::string& source, ParserError& error)
+{
+    if (source[in_location.index] == '(')
+    {
+        auto block = std::make_unique<ParenthesisBlockToken>(++in_location);
+        while (in_location.index < source.size())
+        {
+            if (source[in_location.index] == ')')
+            {
+                block->end = in_location++;
+                return block;
+            }
+            block->content.consume_next(token_set, source, in_location, error);
+            if (error)
+                return nullptr;
+        }
+        error = { in_location, "Missing arguments end. ')' expected" };
+    }
+    return nullptr;
+}
+
+std::unique_ptr<StringLiteralToken> StringLiteralToken::consume(const TokenSet&, Location& in_location, const std::string& source, ParserError& error)
 {
     if (source[in_location.index] == '"')
     {
@@ -177,30 +220,8 @@ std::unique_ptr<StringLiteralToken> StringLiteralToken::consume(Lexer&, Location
     return nullptr;
 }
 
-std::unique_ptr<ArgumentsToken> ArgumentsToken::consume(Lexer& lexer, Location& in_location, const std::string& source, std::optional<ParserError>& error)
-{
-    if (source[in_location.index] == '(')
-    {
-        auto block = std::make_unique<ArgumentsToken>(++in_location);
-        while (in_location.index < source.size())
-        {
-            if (source[in_location.index] == ')')
-            {
-                block->end = in_location++;
-                return block;
-            }
-            block->content.consume_next(lexer, source, in_location, error);
-            if (error)
-            {
-                return nullptr;
-            }
-        }
-        error = {in_location, "Missing arguments end. ')' expected"};
-    }
-    return nullptr;
-}
 
-std::unique_ptr<IntegerToken> IntegerToken::consume(Lexer&, Location& in_location, const std::string& source, std::optional<ParserError>& error)
+std::unique_ptr<IntegerToken> IntegerToken::consume(const TokenSet&, Location& in_location, const std::string& source, ParserError& error)
 {
     unsigned char start_chr = source[in_location.index];
     if (std::isdigit(start_chr))
@@ -229,7 +250,7 @@ std::unique_ptr<IntegerToken> IntegerToken::consume(Lexer&, Location& in_locatio
     return nullptr;
 }
 
-std::unique_ptr<FloatingPointToken> FloatingPointToken::consume(Lexer&, Location& in_location, const std::string& source, std::optional<ParserError>& error)
+std::unique_ptr<FloatingPointToken> FloatingPointToken::consume(const TokenSet&, Location& in_location, const std::string& source, ParserError& error)
 {
     unsigned char start_chr = source[in_location.index];
     if (std::isdigit(start_chr) || (in_location.index < source.size() - 1 && start_chr == '.' && std::isdigit(static_cast<unsigned char>(source[in_location.index + 1]))))
@@ -274,7 +295,7 @@ std::unique_ptr<FloatingPointToken> FloatingPointToken::consume(Lexer&, Location
     return nullptr;
 }
 
-std::unique_ptr<SymbolToken> SymbolToken::consume(Lexer&, Location& in_location, const std::string& source, std::optional<ParserError>&)
+std::unique_ptr<SymbolToken> SymbolToken::consume(const TokenSet&, Location& in_location, const std::string& source, ParserError&)
 {
     auto symbol    = std::make_unique<SymbolToken>(in_location);
     symbol->symbol = source[in_location.index++];

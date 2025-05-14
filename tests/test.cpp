@@ -1,17 +1,14 @@
 #include <iostream>
-
-#include "llp/lexer.hpp"
 #include "llp/file_data.hpp"
-#include "llp/parser.hpp"
+#include "llp/examples/json.hpp"
 
-int main() {
-    Llp::FileReader reader("tests/examples/demo.json");
-    reader.read();
+int main()
+{
+	std::filesystem::path json_path = "tests/examples/demo.json";
 
-    Llp::Lexer lexer;
-    lexer.run(reader.raw_stream());
+	Llp::JSonValue json;
+	Llp::JSonParser::json_from_string(Llp::FileReaderHelper::from_path(json_path), json).exit_on_error(json_path);
 
-    std::cout << lexer.get_root().to_string(true) << "\n";
-
-    Llp::Parser parser(lexer.get_root());
+	std::cout << json.to_string() << "\n";
+	std::cout << json.to_string("", "") << "\n";
 }

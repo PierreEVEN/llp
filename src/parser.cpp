@@ -4,7 +4,7 @@
 
 namespace Llp
 {
-Parser::Parser(const TokenizedBlock& in_block) : block(&in_block)
+Parser::Parser(const DataBlock& in_block) : block(&in_block)
 {
     tokens_to_skip = {TTokenType<WhitespaceToken>::id, TTokenType<CommentToken>::id, TTokenType<EndlToken>::id};
 }

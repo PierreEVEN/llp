@@ -1,192 +1,223 @@
 #pragma once
 #include "tokens.hpp"
 
-namespace Llp {
-/*####[ // / * ]####*/
-DECLARE_LEXER_TOKEN(CommentToken)
-    static std::unique_ptr<CommentToken> consume(Lexer& lexer, Location& in_location, const std::string& source, std::optional<ParserError>& error);
+namespace Llp
+{
+	/*####[ // / * ]####*/
+	DECLARE_LEXER_TOKEN(CommentToken)
+		static std::unique_ptr<CommentToken> consume(const TokenSet& token_set, Location& in_location,
+		                                             const std::string& source, ParserError& error);
 
-    std::string to_string(bool) const override
-    {
-        return multiline ? "/*" + value + "*/" : "//" + value;
-    }
+		std::string to_string(const TokenSet&, bool) const override
+		{
+			return multiline ? "/*" + value + "*/" : "//" + value;
+		}
 
-    bool        multiline = false;
-    std::string value;
-};
+		bool multiline = false;
+		std::string value;
+	};
 
-/*####[ ; ]####*/
-DECLARE_LEXER_TOKEN(SemicolonToken)
-    static std::unique_ptr<SemicolonToken> consume(Lexer& lexer, Location& in_location, const std::string& source, std::optional<ParserError>& error);
+	/*####[ ; ]####*/
+	DECLARE_LEXER_TOKEN(SemicolonToken)
+		static std::unique_ptr<SemicolonToken> consume(const TokenSet& token_set, Location& in_location,
+		                                               const std::string& source, ParserError& error);
 
-    std::string to_string(bool) const override
-    {
-        return ";";
-    }
-};
+		std::string to_string(const TokenSet&, bool) const override
+		{
+			return ";";
+		}
+	};
 
-/*####[ = ]####*/
-DECLARE_LEXER_TOKEN(EqualsToken)
-    static std::unique_ptr<EqualsToken> consume(Lexer& lexer, Location& in_location, const std::string& source, std::optional<ParserError>& error);
+	/*####[ = ]####*/
+	DECLARE_LEXER_TOKEN(EqualsToken)
+		static std::unique_ptr<EqualsToken> consume(const TokenSet& token_set, Location& in_location,
+		                                            const std::string& source, ParserError& error);
 
-    std::string to_string(bool) const override
-    {
-        return "=";
-    }
-};
+		std::string to_string(const TokenSet&, bool) const override
+		{
+			return "=";
+		}
+	};
 
-/*####[ , ]####*/
-DECLARE_LEXER_TOKEN(ComaToken)
-    static std::unique_ptr<ComaToken> consume(Lexer& lexer, Location& in_location, const std::string& source, std::optional<ParserError>& error);
+	/*####[ , ]####*/
+	DECLARE_LEXER_TOKEN(ComaToken)
+		static std::unique_ptr<ComaToken> consume(const TokenSet& token_set, Location& in_location,
+		                                          const std::string& source, ParserError& error);
 
-    std::string to_string(bool) const override
-    {
-        return ",";
-    }
-};
+		std::string to_string(const TokenSet&, bool) const override
+		{
+			return ",";
+		}
+	};
 
-/*####[ \n ]####*/
-DECLARE_LEXER_TOKEN(EndlToken)
-    static std::unique_ptr<EndlToken> consume(Lexer& lexer, Location& in_location, const std::string& source, std::optional<ParserError>& error);
+	/*####[ \n ]####*/
+	DECLARE_LEXER_TOKEN(EndlToken)
+		static std::unique_ptr<EndlToken> consume(const TokenSet& token_set, Location& in_location,
+		                                          const std::string& source, ParserError& error);
 
-    std::string to_string(bool) const override
-    {
-        return "\n";
-    }
-};
+		std::string to_string(const TokenSet&, bool b_debug) const override
+		{
+			return "\n";
+		}
+	};
 
-/*####[ #include "value" ]####*/
-DECLARE_LEXER_TOKEN(IncludeToken)
-    static std::unique_ptr<IncludeToken> consume(Lexer& lexer, Location& in_location, const std::string& source, std::optional<ParserError>& error);
+	/*####[ #include "value" ]####*/
+	DECLARE_LEXER_TOKEN(IncludeToken)
+		static std::unique_ptr<IncludeToken> consume(const TokenSet& token_set, Location& in_location,
+		                                             const std::string& source, ParserError& error);
 
-    std::string to_string(bool) const override
-    {
-        return "#include \"" + path + "\"";
-    }
+		std::string to_string(const TokenSet&, bool) const override
+		{
+			return "#include \"" + path + "\"";
+		}
 
-    bool operator==(const std::string& a) const
-    {
-        return path == a;
-    }
+		bool operator==(const std::string& a) const
+		{
+			return path == a;
+		}
 
-    std::string path;
-};
+		std::string path;
+	};
 
-/*####[ Whitespace ]####*/
-DECLARE_LEXER_TOKEN(WhitespaceToken)
-    static std::unique_ptr<WhitespaceToken> consume(Lexer& lexer, Location& in_location, const std::string& source, std::optional<ParserError>& error);
+	/*####[ Whitespace ]####*/
+	DECLARE_LEXER_TOKEN(WhitespaceToken)
+		static std::unique_ptr<WhitespaceToken> consume(const TokenSet& token_set, Location& in_location,
+		                                                const std::string& source, ParserError& error);
 
-    std::string to_string(bool) const override
-    {
-        return whitespace;
-    }
+		std::string to_string(const TokenSet&, bool) const override
+		{
+			return whitespace;
+		}
 
-    std::string whitespace;
-};
+		std::string whitespace;
+	};
 
-/*####[ Word ]####*/
-DECLARE_LEXER_TOKEN(WordToken)
-    static std::unique_ptr<WordToken> consume(Lexer& lexer, Location& in_location, const std::string& source, std::optional<ParserError>& error);
+	/*####[ Word ]####*/
+	DECLARE_LEXER_TOKEN(WordToken)
+		static std::unique_ptr<WordToken> consume(const TokenSet& token_set, Location& in_location,
+		                                          const std::string& source, ParserError& error);
 
-    std::string to_string(bool) const override
-    {
-        return word;
-    }
+		std::string to_string(const TokenSet&, bool) const override
+		{
+			return word;
+		}
 
-    bool operator==(const std::string& a) const
-    {
-        return word == a;
-    }
+		bool operator==(const std::string& a) const
+		{
+			return word == a;
+		}
 
-    std::string word;
-};
+		std::string word;
+	};
 
-/*####[ {} ]####*/
-DECLARE_LEXER_TOKEN(BlockToken)
-    static std::unique_ptr<BlockToken> consume(Lexer& lexer, Location& in_location, const std::string& source, std::optional<ParserError>& error);
+	/*####[ {} ]####*/
+	DECLARE_LEXER_TOKEN(BraceBlockToken)
+		static std::unique_ptr<BraceBlockToken> consume(const TokenSet& token_set, Location& in_location,
+		                                                const std::string& source, ParserError& error);
 
-    std::string to_string(bool b_debug) const override
-    {
-        return "(" + content.to_string(b_debug) + ")";
-    }
+		std::string to_string(const TokenSet& token_set, bool b_debug) const override
+		{
+			return "{" + content.to_string(token_set, b_debug) + "}";
+		}
 
-    Location       end;
-    TokenizedBlock content;
-};
+		Location end;
+		DataBlock content;
+	};
 
-/*####[ "string" ]####*/
-DECLARE_LEXER_TOKEN(StringLiteralToken)
-    static std::unique_ptr<StringLiteralToken> consume(Lexer& lexer, Location& in_location, const std::string& source, std::optional<ParserError>& error);
+	/*####[ [] ]####*/
+	DECLARE_LEXER_TOKEN(SquareBlockToken)
+		static std::unique_ptr<SquareBlockToken> consume(const TokenSet& token_set, Location& in_location,
+		                                                 const std::string& source, ParserError& error);
 
-    std::string to_string(bool) const override
-    {
-        return '"' + value + '"';
-    }
+		std::string to_string(const TokenSet& token_set, bool b_debug) const override
+		{
+			return "[" + content.to_string(token_set, b_debug) + "]";
+		}
 
-    bool operator==(const std::string& a) const
-    {
-        return value == a;
-    }
+		Location end;
+		DataBlock content;
+	};
 
-    std::string value;
-};
+	/*####[ () ]####*/
+	DECLARE_LEXER_TOKEN(ParenthesisBlockToken)
+		static std::unique_ptr<ParenthesisBlockToken> consume(const TokenSet& token_set, Location& in_location,
+		                                               const std::string& source, ParserError& error);
 
-/*####[ () ]####*/
-DECLARE_LEXER_TOKEN(ArgumentsToken)
-    static std::unique_ptr<ArgumentsToken> consume(Lexer& lexer, Location& in_location, const std::string& source, std::optional<ParserError>& error);
+		std::string to_string(const TokenSet& token_set, bool b_debug) const override
+		{
+			return "(" + content.to_string(token_set, b_debug) + ")";
+		}
 
-    std::string to_string(bool b_debug) const override
-    {
-        return "(" + content.to_string(b_debug) + ")";
-    }
+		Location end;
+		DataBlock content;
+	};
 
-    Location       end;
-    TokenizedBlock content;
-};
+	/*####[ "string" ]####*/
+	DECLARE_LEXER_TOKEN(StringLiteralToken)
+		static std::unique_ptr<StringLiteralToken> consume(const TokenSet& token_set, Location& in_location,
+		                                                   const std::string& source,
+		                                                   ParserError& error);
 
-/*####[ 000 ]####*/
-DECLARE_LEXER_TOKEN(IntegerToken)
-    static std::unique_ptr<IntegerToken> consume(Lexer& lexer, Location& in_location, const std::string& source, std::optional<ParserError>& error);
+		std::string to_string(const TokenSet&, bool) const override
+		{
+			return '"' + value + '"';
+		}
 
-    std::string to_string(bool) const override
-    {
-        return std::to_string(number);
-    }
+		bool operator==(const std::string& a) const
+		{
+			return value == a;
+		}
 
-    bool operator==(int64_t a) const
-    {
-        return number == a;
-    }
+		std::string value;
+	};
 
-    int64_t number;
-};
+	/*####[ 000 ]####*/
+	DECLARE_LEXER_TOKEN(IntegerToken)
+		static std::unique_ptr<IntegerToken> consume(const TokenSet& token_set, Location& in_location,
+		                                             const std::string& source, ParserError& error);
 
-/*####[ 00.00 ]####*/
-DECLARE_LEXER_TOKEN(FloatingPointToken)
-    static std::unique_ptr<FloatingPointToken> consume(Lexer& lexer, Location& in_location, const std::string& source, std::optional<ParserError>& error);
+		std::string to_string(const TokenSet&, bool) const override
+		{
+			return std::to_string(number);
+		}
 
-    std::string to_string(bool) const override
-    {
-        return std::to_string(number);
-    }
+		bool operator==(int64_t a) const
+		{
+			return number == a;
+		}
 
-    double number;
-};
+		int64_t number;
+	};
 
-/*####[ ! ]####*/
-DECLARE_LEXER_TOKEN(SymbolToken)
-    static std::unique_ptr<SymbolToken> consume(Lexer& lexer, Location& in_location, const std::string& source, std::optional<ParserError>& error);
+	/*####[ 00.00 ]####*/
+	DECLARE_LEXER_TOKEN(FloatingPointToken)
+		static std::unique_ptr<FloatingPointToken> consume(const TokenSet& token_set, Location& in_location,
+		                                                   const std::string& source,
+		                                                   ParserError& error);
 
-    std::string to_string(bool) const override
-    {
-        return std::string() + symbol;
-    }
+		std::string to_string(const TokenSet&, bool) const override
+		{
+			return std::to_string(number);
+		}
 
-    bool operator==(char a) const
-    {
-        return symbol == a;
-    }
+		double number;
+	};
 
-    char symbol;
-};
+	/*####[ ! ]####*/
+	DECLARE_LEXER_TOKEN(SymbolToken)
+		static std::unique_ptr<SymbolToken> consume(const TokenSet& token_set, Location& in_location,
+		                                            const std::string& source, ParserError& error);
+
+		std::string to_string(const TokenSet&, bool) const override
+		{
+			return std::string() + symbol;
+		}
+
+		bool operator==(char a) const
+		{
+			return symbol == a;
+		}
+
+		char symbol;
+	};
 }
