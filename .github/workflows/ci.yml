@@ -18,6 +18,8 @@ jobs:
 
       - name: Build Project
         uses: threeal/cmake-action@v2.1.0
+        with:
+          options: CMAKE_BUILD_TYPE=Release
 
       - run: ls -la
 
@@ -26,7 +28,9 @@ jobs:
         with:
           name: artifact-linux
           retention-days: 1
-          path: ./
+          path: |
+            ./include
+            ./build/Release/llp.lib
 
   build_windows:
     name: Windows - Rust app
@@ -37,15 +41,19 @@ jobs:
 
       - name: Build Project
         uses: threeal/cmake-action@v2.1.0
+        with:
+          options: CMAKE_BUILD_TYPE=Release
 
-      - run: dir
+      - run: dirgit p
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: artifact-windows
           retention-days: 1
-          path: ./
+          path: |
+            ./include
+            ./build/Release/llp.lib
 
   package:
     name: Upload release
