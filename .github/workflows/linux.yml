@@ -1,4 +1,4 @@
-name: Build app
+name: Build windows
 
 on:
   push:
@@ -12,16 +12,6 @@ jobs:
   build_linux:
     name: Linux - Rust app
     runs-on: ubuntu-24.04
-    steps:
-      - name: Checkout Project
-        uses: actions/checkout@v4.2.2
-
-      - name: Build Project
-        uses: threeal/cmake-action@v2.1.0
-
-  build_windows:
-    name: Windows - Rust app
-    runs-on: windows-latest
     steps:
       - name: Checkout Project
         uses: actions/checkout@v4.2.2
