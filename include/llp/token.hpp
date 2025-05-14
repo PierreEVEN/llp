@@ -1,5 +1,10 @@
 #pragma once
 
+#include <memory>
+#include <string>
+
+#include "error.hpp"
+
 /** Helper that declare a new token type.
  *
  * Example :
@@ -35,10 +40,6 @@
             return TTokenType<Token>::id;																	\
         }																									\
     using ILexerToken::ILexerToken;
-#include <memory>
-#include <xstring>
-
-#include "error.hpp"
 
 namespace Llp
 {
