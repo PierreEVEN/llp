@@ -19,7 +19,9 @@ jobs:
       - name: Build Project
         uses: threeal/cmake-action@v2.1.0
         with:
+          generator: Ninja
           options: CMAKE_BUILD_TYPE=Release
+          cxx-compiler: clang++
 
       - run: ls -la build
 
@@ -44,6 +46,7 @@ jobs:
         with:
           generator: Ninja
           options: CMAKE_BUILD_TYPE=Release
+          cxx-compiler: clang++
 
       - run: dir build
 
