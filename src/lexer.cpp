@@ -1,53 +1,23 @@
 #include "llp/lexer.hpp"
-
-#include "llp/native_tokens.hpp"
-#include "llp/tokens.hpp"
+#include "llp/token.hpp"
+#include "llp/token_set.hpp"
 
 namespace Llp
 {
-	TokenSet TokenSet::preset_c_like()
+	void Lexer::consume_next(const TokenSet& token_set, const std::string& source, Location& location, ParserError& error)
 	{
-		TokenSet set;
-		set.register_token<CommentToken>("Comment");
-		set.register_token<SemicolonToken>("Semicolon");
-		set.register_token<EndlToken>("Endl");
-		set.register_token<EqualsToken>("Equals");
-		set.register_token<FloatingPointToken>("FloatingPoint");
-		set.register_token<IntegerToken>("Integer");
-		set.register_token<IncludeToken>("Include");
-		set.register_token<StringLiteralToken>("StringLiteral");
-		set.register_token<WhitespaceToken>("Whitespace");
-		set.register_token<WordToken>("Word");
-		set.register_token<ParenthesisBlockToken>("Arguments");
-		set.register_token<BraceBlockToken>("Block");
-		set.register_token<SymbolToken>("Symbol");
-		return set;
+		if (auto token = token_set.parse(source, location, error))
+			tokens.emplace_back(std::move(token));
 	}
 
-	TokenSet TokenSet::preset_json_like()
+	std::string Lexer::to_string(const TokenSet& token_set, bool b_debug) const
 	{
-		TokenSet set;
-		set.register_token<FloatingPointToken>("FloatingPoint");
-		set.register_token<IntegerToken>("Integer");
-		set.register_token<StringLiteralToken>("StringLiteral");
-		set.register_token<WhitespaceToken>("Whitespace");
-		set.register_token<BraceBlockToken>("BraceBlock");
-		set.register_token<SquareBlockToken>("SquareBlock");
-		set.register_token<WordToken>("Word");
-		set.register_token<SymbolToken>("Symbol");
-		return set;
+		std::string str;
+		for (const auto& token : tokens)
+			if (b_debug)
+				str += std::format("{}[{}], ", token_set.get_token_name(token->get_type()), token->to_string(token_set, b_debug));
+			else
+				str += token->to_string(token_set, b_debug);
+		return str;
 	}
-
-	ParserError Lexer::run(const std::string& source, const TokenSet& token_set)
-	{
-		Location location;
-		ParserError error;
-		while (location.index < source.size())
-		{
-			root_block.consume_next(token_set, source, location, error);
-			if (error)
-				break;
-		}
-		return error;
-	}
-} // namespace Llp
+}

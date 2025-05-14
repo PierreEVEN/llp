@@ -1,10 +1,4 @@
 #pragma once
-#include <memory>
-#include <optional>
-#include <string>
-#include <vector>
-
-#include "error.hpp"
 
 /** Helper that declare a new token type.
  *
@@ -41,6 +35,10 @@
             return TTokenType<Token>::id;																	\
         }																									\
     using ILexerToken::ILexerToken;
+#include <memory>
+#include <xstring>
+
+#include "error.hpp"
 
 namespace Llp
 {
@@ -148,23 +146,5 @@ namespace Llp
 			}
 			return loc.index != str.size();
 		}
-	};
-
-	// Represent a subset of the base file (the delimitation is defined by the owning object)
-	class DataBlock
-	{
-	public:
-		void consume_next(const TokenSet& token_set, const std::string& source, Location& location, ParserError& error);
-
-		const std::vector<std::unique_ptr<ILexerToken>>& get_tokens() const
-		{
-			return tokens;
-		}
-
-		std::string to_string(const TokenSet& token_set, bool b_debug = false) const;
-
-	private:
-		// Parsed tokens
-		std::vector<std::unique_ptr<ILexerToken>> tokens;
 	};
 } // namespace Llp

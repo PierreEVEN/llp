@@ -1,100 +1,28 @@
 #pragma once
-#include <format>
-#include "tokens.hpp"
-
-#include <string>
-#include <unordered_map>
+#include "error.hpp"
 
 namespace Llp
 {
-	class TokenSet
-	{
-	public:
-		const char* get_token_name(LexerTokenTypeId id) const
-		{
-			if (id == NULL_TOKEN)
-				return "Null";
-			if (auto it = token_names.find(id); it != token_names.end())
-				return it->second;
-			return "Undefined_Token_Id";
-		}
+	class ILexerToken;
+	class TokenSet;
 
-
-		template <typename T>
-		void register_token(const char* name)
-		{
-			token_types.emplace_back(std::make_unique<TTokenBuilder<T>>());
-			token_names.emplace(TTokenType<T>::id, name);
-		}
-
-		template <typename T, typename Other>
-		void register_token_before(const char* name)
-		{
-			for (auto it = token_types.begin(); it != token_types.end(); ++it)
-				if ((*it)->id() == TTokenType<Other>::id)
-				{
-					token_types.insert(it, std::make_unique<TTokenBuilder<T>>());
-					token_names.emplace(TTokenType<T>::id, name);
-					break;
-				}
-		}
-
-		template <typename T>
-		void remove_token()
-		{
-			for (auto it = token_types.begin(); it != token_types.end(); ++it)
-				if ((*it)->id() == TTokenType<T>::id)
-				{
-					token_names.erase(TTokenType<T>::id);
-					token_types.erase(it);
-					break;
-				}
-		}
-
-		std::unique_ptr<ILexerToken> parse(const std::string& source, Location& location, ParserError& error) const
-		{
-			if (error)
-				return nullptr;
-			for (const auto& type : token_types)
-			{
-				if (auto token = type->consume(*this, location, source, error))
-				{
-					if (error)
-						return nullptr;
-					return token;
-				}
-			}
-			if (!error)
-				error = {
-					location,
-					std::format("Parsing failed {}:{} : unidentified token '{}'", location.line, location.column,
-					            source[location.index])
-				};
-			return nullptr;
-		}
-
-		static TokenSet preset_c_like();
-		static TokenSet preset_json_like();
-
-	private:
-		std::vector<std::unique_ptr<ITokenBuilder>> token_types;
-		std::unordered_map<LexerTokenTypeId, const char*> token_names;
-	};
-
-	//@TODO : Remove Lexer and rename DataBlock to lexer (simplify)
+	// Represent a subset of the base file (the delimitation is defined by the owning object)
 	class Lexer
 	{
 	public:
-		friend class DataBlock;
+		ParserError tokenize(const std::string& source, const TokenSet& token_set);
 
-		[[nodiscard]] ParserError run(const std::string& source, const TokenSet& token_set);
+		void consume_next(const TokenSet& token_set, const std::string& source, Location& location, ParserError& error);
 
-		const DataBlock& get_root() const
+		const std::vector<std::unique_ptr<ILexerToken>>& get_tokens() const
 		{
-			return root_block;
+			return tokens;
 		}
 
+		std::string to_string(const TokenSet& token_set, bool b_debug = false) const;
+
 	private:
-		DataBlock root_block;
+		// Parsed tokens
+		std::vector<std::unique_ptr<ILexerToken>> tokens;
 	};
-} // namespace Llp
+}

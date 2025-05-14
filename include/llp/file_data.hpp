@@ -1,5 +1,10 @@
 #pragma once
-#include <filesystem>
+#include <xstring>
+
+namespace std::filesystem
+{
+	class path;
+}
 
 namespace Llp {
 

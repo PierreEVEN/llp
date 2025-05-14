@@ -92,13 +92,13 @@ namespace Llp
 		{
 			TokenSet token_set = TokenSet::preset_json_like();
 			Lexer lexer;
-			lexer.run(in_string, token_set).exit_on_error(debug_path);
-			Parser parser(lexer.get_root());
+			lexer.tokenize(in_string, token_set).exit_on_error(debug_path);
+			Parser parser(lexer);
 			return parse_json_value(parser, token_set, out_json);
 		}
 
 	private:
-		static ParserError parse_array_value(const DataBlock& block, const TokenSet& token_set,
+		static ParserError parse_array_value(const Lexer& block, const TokenSet& token_set,
 		                                     std::vector<JSonValue>& out_values)
 		{
 			Parser parser(block);
@@ -121,7 +121,7 @@ namespace Llp
 			return {};
 		}
 
-		static ParserError parse_object_value(const DataBlock& block, const TokenSet& token_set,
+		static ParserError parse_object_value(const Lexer& block, const TokenSet& token_set,
 		                                      std::unordered_map<std::string, JSonValue>& out_values)
 		{
 			Parser parser(block);

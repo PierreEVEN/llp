@@ -1,5 +1,6 @@
 #pragma once
-#include "tokens.hpp"
+#include "lexer.hpp"
+#include "token.hpp"
 
 namespace Llp
 {
@@ -121,7 +122,7 @@ namespace Llp
 		}
 
 		Location end;
-		DataBlock content;
+		Lexer content;
 	};
 
 	/*####[ [] ]####*/
@@ -135,7 +136,7 @@ namespace Llp
 		}
 
 		Location end;
-		DataBlock content;
+		Lexer content;
 	};
 
 	/*####[ () ]####*/
@@ -149,7 +150,7 @@ namespace Llp
 		}
 
 		Location end;
-		DataBlock content;
+		Lexer content;
 	};
 
 	/*####[ "string" ]####*/

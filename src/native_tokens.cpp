@@ -1,5 +1,7 @@
 #include "llp/native_tokens.hpp"
 
+#include "llp/lexer.hpp"
+
 namespace Llp
 {
 std::unique_ptr<Llp::CommentToken> CommentToken::consume(const TokenSet&, Location& in_location, const std::string& source, ParserError& error)

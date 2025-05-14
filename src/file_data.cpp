@@ -1,6 +1,9 @@
 #include "llp/file_data.hpp"
 
 #include <fstream>
+#include <filesystem>
+#include <string>
+
 namespace Llp {
 	std::string FileReaderHelper::from_path(const std::filesystem::path& path)
 	{
