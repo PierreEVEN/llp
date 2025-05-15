@@ -26,20 +26,6 @@
  * }
  *
  */
-#define DECLARE_LEXER_TOKEN(Token)																			\
-    template <> struct TTokenType<class Token>																\
-    {																										\
-        static constexpr const char*      name        = #Token;												\
-        static constexpr LexerTokenTypeId id   = &_InternalTokenGenerator::_token_type_id_gen_fn<Token>;    \
-    };																										\
-    class Token : public ILexerToken																		\
-    {																										\
-    public:																									\
-        LexerTokenTypeId get_type() const override															\
-        {																									\
-            return TTokenType<Token>::id;																	\
-        }																									\
-    using ILexerToken::ILexerToken;
 
 namespace Llp
 {

@@ -9,7 +9,7 @@ namespace Llp
 	class TokenSet
 	{
 	public:
-		const char* get_token_name(LexerTokenTypeId id) const
+		[[nodiscard]] const char* get_token_name(LexerTokenTypeId id) const
 		{
 			if (id == NULL_TOKEN)
 				return "Null";
@@ -50,7 +50,7 @@ namespace Llp
 				}
 		}
 
-		std::unique_ptr<ILexerToken> parse(const std::string& source, Location& location, ParserError& error) const
+		[[nodiscard]] std::unique_ptr<ILexerToken> parse(const std::string& source, Location& location, ParserError& error) const
 		{
 			if (error)
 				return nullptr;
@@ -66,14 +66,14 @@ namespace Llp
 			if (!error)
 				error = {
 					location,
-					std::format("Parsing failed {}:{} : unidentified token '{}'", location.line, location.column,
-					            source[location.index])
+					std::format("Parsing failed {}:{} : unidentified token '{}'", location.get_line(), location.get_column(),
+					            source[location.get_index()])
 				};
 			return nullptr;
 		}
 
-		static TokenSet preset_c_like();
-		static TokenSet preset_json_like();
+		[[nodiscard]] static TokenSet preset_c_like();
+		[[nodiscard]] static TokenSet preset_json_like();
 
 	private:
 		std::vector<std::unique_ptr<ITokenBuilder>> token_types;

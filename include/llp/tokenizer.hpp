@@ -11,16 +11,16 @@ namespace Llp
 	class Tokenizer
 	{
 	public:
-		ParserError tokenize(const std::string& source, const TokenSet& token_set);
+		[[nodiscard]] ParserError tokenize(const std::string& source, const TokenSet& token_set);
 
 		void consume_next(const TokenSet& token_set, const std::string& source, Location& location, ParserError& error);
 
-		const std::vector<std::unique_ptr<ILexerToken>>& get_tokens() const
+		[[nodiscard]] const std::vector<std::unique_ptr<ILexerToken>>& get_tokens() const
 		{
 			return tokens;
 		}
 
-		std::string to_string(const TokenSet& token_set, bool b_debug = false) const;
+		[[nodiscard]] std::string to_string(const TokenSet& token_set, bool b_debug = false) const;
 
 	private:
 		// Parsed tokens

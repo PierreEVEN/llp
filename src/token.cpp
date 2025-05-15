@@ -11,7 +11,7 @@ namespace Llp
 		tokens.clear();
 		Location location;
 		ParserError error;
-		while (location.index < source.size())
+		while (location.get_index() < source.size())
 		{
 			consume_next(token_set, source, location, error);
 			if (error)

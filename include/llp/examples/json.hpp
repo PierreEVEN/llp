@@ -115,7 +115,7 @@ namespace Llp
 				return ParserError{
 					parser.current_location(),
 					std::format("Unexpected token {} : '{}'", parser.get_current_token_name(token_set),
-					            parser.get_current_token()->to_string(token_set))
+								parser.get_current_token()->to_string(token_set))
 				};
 
 			return {};

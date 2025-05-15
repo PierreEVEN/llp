@@ -24,7 +24,7 @@ namespace Llp
 			return *this;
 		}
 
-		operator bool() const
+		explicit operator bool() const
 		{
 			return get_with_offset(0) < block->get_tokens().size();
 		}
@@ -82,17 +82,18 @@ namespace Llp
 			return *block->get_tokens()[get_with_offset(0)];
 		}
 
-		const Location& current_location() const
+		[[nodiscard]] const Location& current_location() const
 		{
 			if (block->get_tokens().empty())
 			{
 				static Location empty_location;
 				return empty_location;
 			}
-			return block->get_tokens()[idx]->location;
+			size_t offset = get_with_offset(0);
+			return block->get_tokens()[offset]->location;
 		}
 
-		LexerTokenTypeId get_current_token_type() const
+		[[nodiscard]] LexerTokenTypeId get_current_token_type() const
 		{
 			size_t offset = get_with_offset(0);
 			if (offset < block->get_tokens().size())
@@ -100,7 +101,7 @@ namespace Llp
 			return NULL_TOKEN;
 		}
 
-		const char* get_current_token_name(const TokenSet& token_set) const
+		[[nodiscard]] const char* get_current_token_name(const TokenSet& token_set) const
 		{
 			size_t offset = get_with_offset(0);
 			if (offset < block->get_tokens().size())
@@ -108,7 +109,7 @@ namespace Llp
 			return token_set.get_token_name(NULL_TOKEN);
 		}
 
-		const ILexerToken* get_current_token() const
+		[[nodiscard]] const ILexerToken* get_current_token() const
 		{
 			size_t offset = get_with_offset(0);
 			if (offset < block->get_tokens().size())
@@ -118,7 +119,7 @@ namespace Llp
 
 	private:
 		// Get current token idx with a certain offset (excluding skipped tokens)
-		size_t get_with_offset(size_t offset) const
+		[[nodiscard]] size_t get_with_offset(size_t offset) const
 		{
 			const auto& tokens = block->get_tokens();
 			size_t out_offset = idx;
@@ -130,7 +131,7 @@ namespace Llp
 			return out_offset;
 		}
 
-		bool is_skipped_token(size_t t_idx) const
+		[[nodiscard]] bool is_skipped_token(size_t t_idx) const
 		{
 			const auto& tokens = block->get_tokens();
 			auto type = tokens[t_idx]->get_type();
