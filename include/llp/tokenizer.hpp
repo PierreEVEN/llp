@@ -8,7 +8,7 @@ namespace Llp
 	class TokenSet;
 
 	// Represent a subset of the base file (the delimitation is defined by the owning object)
-	class Lexer
+	class Tokenizer
 	{
 	public:
 		ParserError tokenize(const std::string& source, const TokenSet& token_set);

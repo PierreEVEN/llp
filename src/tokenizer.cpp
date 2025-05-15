@@ -1,16 +1,16 @@
-#include "llp/lexer.hpp"
+#include "llp/tokenizer.hpp"
 #include "llp/token.hpp"
 #include "llp/token_set.hpp"
 
 namespace Llp
 {
-	void Lexer::consume_next(const TokenSet& token_set, const std::string& source, Location& location, ParserError& error)
+	void Tokenizer::consume_next(const TokenSet& token_set, const std::string& source, Location& location, ParserError& error)
 	{
 		if (auto token = token_set.parse(source, location, error))
 			tokens.emplace_back(std::move(token));
 	}
 
-	std::string Lexer::to_string(const TokenSet& token_set, bool b_debug) const
+	std::string Tokenizer::to_string(const TokenSet& token_set, bool b_debug) const
 	{
 		std::string str;
 		for (const auto& token : tokens)

@@ -11,7 +11,7 @@
  *
  * DECLARE_LEXER_TOKEN(TokenTypeName) {
  *		static std::unique_ptr<TokenTypeName> consume(
- *			Lexer& lexer,
+ *			Tokenizer& tokenizer,
  *			Location& in_location,
  *			const std::string& source,
  *			ParserError& error)
@@ -43,7 +43,7 @@
 
 namespace Llp
 {
-	class Lexer;
+	class Tokenizer;
 	class TokenSet;
 	class ILexerToken;
 

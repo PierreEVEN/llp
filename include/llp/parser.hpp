@@ -1,5 +1,5 @@
 #pragma once
-#include "lexer.hpp"
+#include "tokenizer.hpp"
 #include "token.hpp"
 #include "token_set.hpp"
 
@@ -11,12 +11,12 @@ namespace Llp
 
 namespace Llp
 {
-	class Lexer;
+	class Tokenizer;
 
 	class Parser
 	{
 	public:
-		Parser(const Lexer& in_block);
+		Parser(const Tokenizer& in_block);
 
 		Parser& operator++()
 		{
@@ -141,7 +141,7 @@ namespace Llp
 		}
 
 		size_t idx = 0;
-		const Lexer* block;
+		const Tokenizer* block;
 
 		std::vector<LexerTokenTypeId> tokens_to_skip;
 	};

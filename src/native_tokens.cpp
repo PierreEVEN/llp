@@ -1,6 +1,6 @@
 #include "llp/native_tokens.hpp"
 
-#include "llp/lexer.hpp"
+#include "llp/tokenizer.hpp"
 
 namespace Llp
 {

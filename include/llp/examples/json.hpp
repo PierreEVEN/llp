@@ -1,6 +1,6 @@
 #pragma once
 #include <unordered_map>
-#include "llp/lexer.hpp"
+#include "llp/tokenizer.hpp"
 #include "llp/native_tokens.hpp"
 #include "llp/parser.hpp"
 
@@ -91,14 +91,14 @@ namespace Llp
 		                                    const std::filesystem::path& debug_path = "")
 		{
 			TokenSet token_set = TokenSet::preset_json_like();
-			Lexer lexer;
-			lexer.tokenize(in_string, token_set).exit_on_error(debug_path);
-			Parser parser(lexer);
+			Tokenizer tokenizer;
+			tokenizer.tokenize(in_string, token_set).exit_on_error(debug_path);
+			Parser parser(tokenizer);
 			return parse_json_value(parser, token_set, out_json);
 		}
 
 	private:
-		static ParserError parse_array_value(const Lexer& block, const TokenSet& token_set,
+		static ParserError parse_array_value(const Tokenizer& block, const TokenSet& token_set,
 		                                     std::vector<JSonValue>& out_values)
 		{
 			Parser parser(block);
@@ -121,10 +121,10 @@ namespace Llp
 			return {};
 		}
 
-		static ParserError parse_object_value(const Lexer& block, const TokenSet& token_set,
+		static ParserError parse_object_value(const Tokenizer& tokenizer, const TokenSet& token_set,
 		                                      std::unordered_map<std::string, JSonValue>& out_values)
 		{
-			Parser parser(block);
+			Parser parser(tokenizer);
 			do
 			{
 				auto key = parser.consume<StringLiteralToken>();

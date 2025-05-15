@@ -1,5 +1,5 @@
 #pragma once
-#include "lexer.hpp"
+#include "tokenizer.hpp"
 #include "token.hpp"
 
 namespace Llp
@@ -122,7 +122,7 @@ namespace Llp
 		}
 
 		Location end;
-		Lexer content;
+		Tokenizer content;
 	};
 
 	/*####[ [] ]####*/
@@ -136,7 +136,7 @@ namespace Llp
 		}
 
 		Location end;
-		Lexer content;
+		Tokenizer content;
 	};
 
 	/*####[ () ]####*/
@@ -150,7 +150,7 @@ namespace Llp
 		}
 
 		Location end;
-		Lexer content;
+		Tokenizer content;
 	};
 
 	/*####[ "string" ]####*/

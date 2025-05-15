@@ -1,12 +1,12 @@
 #include "llp/token.hpp"
 
-#include "llp/lexer.hpp"
+#include "llp/tokenizer.hpp"
 
 #include <format>
 
 namespace Llp
 {
-	ParserError Lexer::tokenize(const std::string& source, const TokenSet& token_set)
+	ParserError Tokenizer::tokenize(const std::string& source, const TokenSet& token_set)
 	{
 		tokens.clear();
 		Location location;
