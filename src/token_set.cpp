@@ -8,9 +8,7 @@ namespace Llp
 	{
 		TokenSet set;
 		set.register_token<CommentToken>("Comment");
-		set.register_token<SemicolonToken>("Semicolon");
 		set.register_token<EndlToken>("Endl");
-		set.register_token<EqualsToken>("Equals");
 		set.register_token<FloatingPointToken>("FloatingPoint");
 		set.register_token<IntegerToken>("Integer");
 		set.register_token<IncludeToken>("Include");

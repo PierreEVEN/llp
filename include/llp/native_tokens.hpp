@@ -18,39 +18,6 @@ namespace Llp
 		std::string value;
 	};
 
-	/*####[ ; ]####*/
-	DECLARE_LEXER_TOKEN(SemicolonToken)
-		static std::unique_ptr<SemicolonToken> consume(const TokenSet& token_set, Location& in_location,
-		                                               const std::string& source, ParserError& error);
-
-		std::string to_string(const TokenSet&, bool) const override
-		{
-			return ";";
-		}
-	};
-
-	/*####[ = ]####*/
-	DECLARE_LEXER_TOKEN(EqualsToken)
-		static std::unique_ptr<EqualsToken> consume(const TokenSet& token_set, Location& in_location,
-		                                            const std::string& source, ParserError& error);
-
-		std::string to_string(const TokenSet&, bool) const override
-		{
-			return "=";
-		}
-	};
-
-	/*####[ , ]####*/
-	DECLARE_LEXER_TOKEN(ComaToken)
-		static std::unique_ptr<ComaToken> consume(const TokenSet& token_set, Location& in_location,
-		                                          const std::string& source, ParserError& error);
-
-		std::string to_string(const TokenSet&, bool) const override
-		{
-			return ",";
-		}
-	};
-
 	/*####[ \n ]####*/
 	DECLARE_LEXER_TOKEN(EndlToken)
 		static std::unique_ptr<EndlToken> consume(const TokenSet& token_set, Location& in_location,

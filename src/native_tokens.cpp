@@ -50,21 +50,6 @@ std::unique_ptr<Llp::CommentToken> CommentToken::consume(const TokenSet&, Locati
     return nullptr;
 }
 
-std::unique_ptr<SemicolonToken> SemicolonToken::consume(const TokenSet&, Location& in_location, const std::string& source, ParserError&)
-{
-    return source[in_location.index] == ';' ? std::make_unique<SemicolonToken>(in_location++) : nullptr;
-}
-
-std::unique_ptr<EqualsToken> EqualsToken::consume(const TokenSet&, Location& in_location, const std::string& source, ParserError&)
-{
-    return source[in_location.index] == '=' ? std::make_unique<EqualsToken>(in_location++) : nullptr;
-}
-
-std::unique_ptr<ComaToken> ComaToken::consume(const TokenSet&, Location& in_location, const std::string& source, ParserError&)
-{
-    return source[in_location.index] == ',' ? std::make_unique<ComaToken>(in_location++) : nullptr;
-}
-
 std::unique_ptr<EndlToken> EndlToken::consume(const TokenSet&, Location& in_location, const std::string& source, ParserError&)
 {
     return source[in_location.index] == '\n' ? std::make_unique<EndlToken>(in_location.on_new_line()) : nullptr;
