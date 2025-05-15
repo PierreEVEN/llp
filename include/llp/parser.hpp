@@ -89,8 +89,7 @@ namespace Llp
 				static Location empty_location;
 				return empty_location;
 			}
-			size_t offset = get_with_offset(0);
-			return block->get_tokens()[offset]->location;
+			return block->get_tokens()[idx]->location;
 		}
 
 		[[nodiscard]] LexerTokenTypeId get_current_token_type() const
